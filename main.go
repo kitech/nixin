@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/qtui/qtcore"
+	"github.com/qtui/qtrt"
 	"github.com/qtui/qtsyms"
 	"github.com/qtui/qtwidgets"
 )
@@ -22,13 +22,21 @@ func main() {
 	// log.Println("top -pid", os.Getpid())
 
 	btn := qtwidgets.NewQPushButton()
+	qtrt.Connect(btn, "clicked(bool)", func(b bool) {
+		log.Println("works???", b)
+	})
 	btn.SetFlat(true)
 	btn.SetText("hehhe")
 	btn.Show()
 
-	qstr := qtcore.QString_FromUtf8("hehhee")
-	log.Println(qstr.Length())
-	qstr.Dtor()
+	btn.Size()
+
+	// btn.Dtor()
+
+	// mw := qtwidgets.NewQMainWindow(nil, 0)
+	// mw.Show()
+	// mw.Hide()
+	// mw.Dtor()
 
 	// gopp.PauseAk() // 到这儿，内存28M
 	log.Println("app.Exec ...", "top -pid", os.Getpid(), "lsof -p", os.Getpid())
