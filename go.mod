@@ -4,8 +4,11 @@ go 1.22.3
 
 require (
 	github.com/kitech/gopp v0.0.0
-	github.com/kitech/minqt/qtinline v0.0.0
+	// github.com/kitech/minqt/qtinline v0.0.0
+    github.com/qtui/qtwidgets v0.0.0
 )
+replace github.com/qtui/qtwidgets => ../qtui/qtwidgets
+replace github.com/qtui/qtcore => ../qtui/qtcore
 
 require (
 	github.com/ebitengine/purego v0.7.1
@@ -13,6 +16,7 @@ require (
 	github.com/kitech/gopp/cgopp v0.0.0
 	github.com/qtui/qtclzsz v0.0.0 // indirect
 	github.com/qtui/qtsyms v0.0.0 // indirect
+    github.com/qtui/qtcore v0.0.0
 )
 
 require (
@@ -33,22 +37,21 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 )
 
-replace github.com/qtui/qtrt => ../../qtui/qtrt
+replace github.com/qtui/qtrt => ../qtui/qtrt
 
-replace github.com/qtui/qtclzsz => ../../qtui/qtclzsz
+replace github.com/qtui/qtclzsz => ../qtui/qtclzsz
 
-replace github.com/qtui/qtsyms => ../../qtui/qtsyms
+replace github.com/qtui/qtsyms => ../qtui/qtsyms
 
-replace github.com/qtui/qtqt => ../../qtui/qtqt
+replace github.com/qtui/qtqt => ../qtui/qtqt
 
-replace github.com/qtui/qtmeta => ../../qtui/qtmeta
+replace github.com/qtui/qtmeta => ../qtui/qtmeta
 
-replace github.com/qtui/miscutil => ../../qtui/miscutil
+replace github.com/qtui/miscutil => ../qtui/miscutil
 
-replace github.com/kitech/minqt => ../
 
-replace github.com/kitech/gopp => ../../goplusplus
+replace github.com/kitech/gopp => ../goplusplus
 
-replace github.com/kitech/gopp/cgopp => ../../goplusplus/cgopp
+replace github.com/kitech/gopp/cgopp =>  ../goplusplus/cgopp
 
-replace github.com/kitech/minqt/qtinline => ../qtinline
+// replace github.com/kitech/minqt/qtinline => ../qtinline
