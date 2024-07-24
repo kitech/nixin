@@ -13,7 +13,7 @@ func main() {
 	// gopp.PauseAk() // 到这儿，内存24M
 	qtsyms.LoadAllQtSymbols() // 这个初始化现在是必须的
 
-	app := qtwidgets.NewQApplication([]string{"./heh.exe"}, 0)
+	app := qtwidgets.NewQApplication([]string{"./nixui.exe"}, 0)
 	// gopp.PauseAk() // 到这儿，内存26M
 	// ape := NewQQmlApplicationEngine(nil)
 	// gopp.PauseAk() // 到这儿，内存27M
