@@ -18,6 +18,7 @@ type MainWindow struct {
 
 	lftw1      *qtwidgets.QWidget
 	rgtopstkw1 *qtwidgets.QStackedWidget
+	stkcuritm  string
 
 	lovbox1 *qtwidgets.QVBoxLayout // left nav
 	lohbox1 *qtwidgets.QVBoxLayout // right top nav
@@ -31,59 +32,49 @@ type MainWindow struct {
 	tab3   *qtwidgets.QWidget
 
 	lftbtnmenus []*qtwidgets.QPushButton
+
+	ccpages map[string]qtwidgets.QWidgetITF
 }
 
 func NewMainWindow() *MainWindow {
 	me := &MainWindow{}
+	me.ccpages = map[string]qtwidgets.QWidgetITF{}
 	me.setupui()
 	return me
 }
 func (me *MainWindow) setupui() {
+	me.stkcuritm = "welcome"
+
 	me.QMainWindow = qtwidgets.NewQMainWindow(nil, 0)
 	me.split1 = qtwidgets.NewQSplitter(me.QMainWindow)
 	me.SetCentralWidget(me.split1)
 
 	me.lovbox1 = qtwidgets.NewQVBoxLayout(me.split1)
 
-	{
-		btn := qtwidgets.NewQPushButton("hehee111")
-		qtrt.Connect(btn, "clicked(bool)", func(b bool) {
-			log.Println("works???", b)
-		})
-		// btn.SetFlat(true)
-		// btn.SetText("hehhe111")
-		me.lovbox1.AddWidget(btn)
-	}
-	{
-		btn := qtwidgets.NewQPushButtonz0()
-		qtrt.Connect(btn, "clicked(bool)", func(b bool) {
-			log.Println("works???222", b)
-		})
-		// btn.SetFlat(true)
-		btn.SetText("hehhe222")
-		me.lovbox1.AddWidget(btn)
+	btnmenudats := []string{
+		"welcome",
+		"installed",
+		"history",
+		"profilelist",
+		"hehehhe555",
+		"hehehhe666",
+		"hehehhe777",
+		"hehehhe888",
+		"hehehhe999",
+		"hehehheaaa",
+		"hehehhebbb",
+		"hehehheccc",
+		"hehehheddd",
 	}
 
-	btnmenudats := []any{
-		"hehehhe333", func(b bool) { log.Println("hehehhe333") },
-		"hehehhe444", func(b bool) { log.Println("hehehhe444") },
-		"hehehhe555", func(b bool) { log.Println("hehehhe555") },
-		"hehehhe666", func(b bool) { log.Println("hehehhe666") },
-		"hehehhe777", func(b bool) { log.Println("hehehhe777") },
-		"hehehhe888", func(b bool) { log.Println("hehehhe888") },
-		"hehehhe999", func(b bool) { log.Println("hehehhe999") },
-		"hehehheaaa", func(b bool) { log.Println("hehehheaaa") },
-		"hehehhebbb", func(b bool) { log.Println("hehehhebbb") },
-		"hehehheccc", func(b bool) { log.Println("hehehheccc") },
-		"hehehheddd", func(b bool) { log.Println("hehehheddd") },
-	}
-
-	for i := 0; i < len(btnmenudats); i += 2 {
-		name := btnmenudats[i].(string)
-		fn := btnmenudats[i+1].(func(bool))
+	for i := 0; i < len(btnmenudats); i += 1 {
+		name := btnmenudats[i]
 
 		btn := qtwidgets.NewQPushButtonz0()
+		btn.SetObjectName(name)
 		btn.SetText(name)
+
+		fn := func(b bool) { me.switchcontentpage(b, btn) }
 		qtrt.Connect(btn, "clicked(bool)", fn)
 
 		me.lftbtnmenus = append(me.lftbtnmenus, btn)
@@ -110,6 +101,7 @@ func (me *MainWindow) setupui() {
 	// top
 	me.welcm = NewWelcome()
 	me.rgtopstkw1.AddWidget(me.welcm)
+	me.ccpages["welcome"] = me.welcm
 	// me.rgtopstkw1.SetCurrentIndex(0)
 
 	// bottom
@@ -120,5 +112,38 @@ func (me *MainWindow) setupui() {
 		me.tabcw1.AddTab(btn, "tab2")
 		btn = qtwidgets.NewQPushButtonz0(nil)
 		me.tabcw1.AddTab(btn, "tab3")
+	}
+}
+
+func (me *MainWindow) switchcontentpage(b bool, btn *qtwidgets.QPushButton) {
+	objname := btn.ObjectName()
+	log.Println(objname, b)
+
+	pagex, ok := me.ccpages[objname]
+	if ok {
+		idx := me.rgtopstkw1.IndexOf(pagex)
+		curidx := me.rgtopstkw1.CurrentIndex()
+		if idx != curidx {
+			me.rgtopstkw1.SetCurrentWidget(pagex)
+		}
+		return
+	}
+	switch objname {
+	case "welcome":
+	case "installed":
+		page := NewInstalled()
+		idx := me.rgtopstkw1.AddWidget(page)
+		me.rgtopstkw1.SetCurrentIndex(idx)
+		me.ccpages[objname] = page
+	case "history":
+		page := NewHistory()
+		idx := me.rgtopstkw1.AddWidget(page)
+		me.rgtopstkw1.SetCurrentIndex(idx)
+		me.ccpages[objname] = page
+	case "profilelist":
+		page := NewProfilelist()
+		idx := me.rgtopstkw1.AddWidget(page)
+		me.rgtopstkw1.SetCurrentIndex(idx)
+		me.ccpages[objname] = page
 	}
 }

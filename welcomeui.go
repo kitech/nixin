@@ -13,46 +13,15 @@ import (
 )
 
 type Welcome struct {
-	*qtwidgets.QWidget
-
-	/////
-	ccte *qtwidgets.QTextEdit
+	*PageBase
 }
 
 func NewWelcome(parent ...qtwidgets.QWidgetITF) *Welcome {
 	me := &Welcome{}
-	me.QWidget = qtwidgets.NewQWidget(gopp.FirstofGv(parent))
-
-	me.setupui()
+	me.PageBase = NewPageBase(parent...)
 	// me.setupmore()
 	time.AfterFunc(gopp.DurandMs(100, 200), qtrt.RunonUithreadfn(me.setupmore))
 	return me
-}
-
-func (me *Welcome) setupui() {
-
-	hbox := qtwidgets.NewQHBoxLayout(nil)
-	btn := qtwidgets.NewQPushButtonz0(nil)
-	hbox.AddWidget(btn)
-	btn = qtwidgets.NewQPushButtonz0(nil)
-	hbox.AddWidget(btn)
-	btn = qtwidgets.NewQPushButtonz0(nil)
-	hbox.AddWidget(btn)
-
-	vbox := qtwidgets.NewQVBoxLayout(nil)
-	vbox.AddLayout(hbox)
-
-	te := qtwidgets.NewQTextEdit()
-	te.SetReadOnly(true)
-	te.SetText("Welcome to *NixGUI v0.1*\n")
-	vbox.AddWidget(te)
-	me.ccte = te
-
-	spc := qtwidgets.NewQSpacerItem(40, 20, 0, qtwidgets.QSizePolicy__Minimum)
-	vbox.AddItem(spc)
-
-	log.Println(vbox, hbox)
-	me.SetLayout(vbox)
 }
 
 func (me *Welcome) setupmore() {
