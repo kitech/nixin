@@ -5,18 +5,20 @@ go 1.22.3
 require (
 	github.com/kitech/gopp v0.0.0
 	// github.com/kitech/minqt/qtinline v0.0.0
-    github.com/qtui/qtwidgets v0.0.0
+	github.com/qtui/qtwidgets v0.0.0
 )
+
 replace github.com/qtui/qtwidgets => ../qtui/qtwidgets
+
 replace github.com/qtui/qtcore => ../qtui/qtcore
 
 require (
-	github.com/ebitengine/purego v0.7.1
+	github.com/ebitengine/purego v0.7.1 // indirect
 	github.com/kitech/dl v0.0.0-20201225001532-be4f4faa4070 // indirect
-	github.com/kitech/gopp/cgopp v0.0.0
+	github.com/kitech/gopp/cgopp v0.0.0 // indirect
 	github.com/qtui/qtclzsz v0.0.0 // indirect
-	github.com/qtui/qtsyms v0.0.0 // indirect
-    github.com/qtui/qtcore v0.0.0
+	github.com/qtui/qtcore v0.0.0 // indirect
+	github.com/qtui/qtsyms v0.0.0
 )
 
 require (
@@ -28,12 +30,11 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/lytics/base62 v0.0.0-20180808010106-0ee4de5a5d6d // indirect
+	github.com/orcaman/concurrent-map/v2 v2.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/qtui/miscutil v0.0.0 // indirect
-	github.com/qtui/qtmeta v0.0.0
 	github.com/qtui/qtqt v0.0.0 // indirect
 	github.com/qtui/qtrt v0.0.0
-	github.com/smacker/go-tree-sitter v0.0.0-20240625050157-a31a98a7c0f6
 	golang.org/x/sys v0.19.0 // indirect
 )
 
@@ -49,9 +50,8 @@ replace github.com/qtui/qtmeta => ../qtui/qtmeta
 
 replace github.com/qtui/miscutil => ../qtui/miscutil
 
-
 replace github.com/kitech/gopp => ../goplusplus
 
-replace github.com/kitech/gopp/cgopp =>  ../goplusplus/cgopp
+replace github.com/kitech/gopp/cgopp => ../goplusplus/cgopp
 
 // replace github.com/kitech/minqt/qtinline => ../qtinline

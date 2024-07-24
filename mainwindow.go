@@ -43,20 +43,6 @@ func (me *MainWindow) setupui() {
 	me.split1 = qtwidgets.NewQSplitter(me.QMainWindow)
 	me.SetCentralWidget(me.split1)
 
-	btnmenudats := []any{
-		"hehehhe333", func(b bool) { log.Println("hehehhe333") },
-		"hehehhe444", func(b bool) { log.Println("hehehhe444") },
-		"hehehhe555", func(b bool) { log.Println("hehehhe555") },
-		"hehehhe666", func(b bool) { log.Println("hehehhe666") },
-		"hehehhe777", func(b bool) { log.Println("hehehhe777") },
-		"hehehhe888", func(b bool) { log.Println("hehehhe888") },
-		"hehehhe999", func(b bool) { log.Println("hehehhe999") },
-		"hehehheaaa", func(b bool) { log.Println("hehehheaaa") },
-		"hehehhebbb", func(b bool) { log.Println("hehehhebbb") },
-		"hehehheccc", func(b bool) { log.Println("hehehheccc") },
-		"hehehheddd", func(b bool) { log.Println("hehehheddd") },
-	}
-
 	me.lovbox1 = qtwidgets.NewQVBoxLayout(me.split1)
 
 	{
@@ -76,6 +62,20 @@ func (me *MainWindow) setupui() {
 		// btn.SetFlat(true)
 		btn.SetText("hehhe222")
 		me.lovbox1.AddWidget(btn)
+	}
+
+	btnmenudats := []any{
+		"hehehhe333", func(b bool) { log.Println("hehehhe333") },
+		"hehehhe444", func(b bool) { log.Println("hehehhe444") },
+		"hehehhe555", func(b bool) { log.Println("hehehhe555") },
+		"hehehhe666", func(b bool) { log.Println("hehehhe666") },
+		"hehehhe777", func(b bool) { log.Println("hehehhe777") },
+		"hehehhe888", func(b bool) { log.Println("hehehhe888") },
+		"hehehhe999", func(b bool) { log.Println("hehehhe999") },
+		"hehehheaaa", func(b bool) { log.Println("hehehheaaa") },
+		"hehehhebbb", func(b bool) { log.Println("hehehhebbb") },
+		"hehehheccc", func(b bool) { log.Println("hehehheccc") },
+		"hehehheddd", func(b bool) { log.Println("hehehheddd") },
 	}
 
 	for i := 0; i < len(btnmenudats); i += 2 {
