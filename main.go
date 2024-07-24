@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/qtui/qtrt"
 	"github.com/qtui/qtsyms"
 	"github.com/qtui/qtwidgets"
 )
@@ -21,15 +20,15 @@ func main() {
 	// ape.Load("hh.qml")
 	// log.Println("top -pid", os.Getpid())
 
-	btn := qtwidgets.NewQPushButton()
-	qtrt.Connect(btn, "clicked(bool)", func(b bool) {
-		log.Println("works???", b)
-	})
-	btn.SetFlat(true)
-	btn.SetText("hehhe")
-	btn.Show()
+	// btn := qtwidgets.NewQPushButton()
+	// qtrt.Connect(btn, "clicked(bool)", func(b bool) {
+	// 	log.Println("works???", b)
+	// })
+	// btn.SetFlat(true)
+	// btn.SetText("hehhe")
+	// btn.Show()
 
-	btn.Size()
+	// btn.Size()
 
 	// btn.Dtor()
 
@@ -37,6 +36,9 @@ func main() {
 	// mw.Show()
 	// mw.Hide()
 	// mw.Dtor()
+
+	mw := NewMainWindow()
+	mw.Show()
 
 	// gopp.PauseAk() // 到这儿，内存28M
 	log.Println("app.Exec ...", "top -pid", os.Getpid(), "lsof -p", os.Getpid())
