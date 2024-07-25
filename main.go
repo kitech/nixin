@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	_ "github.com/kitech/nixcmd"
 	"github.com/qtui/qtsyms"
 	"github.com/qtui/qtwidgets"
 )

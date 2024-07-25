@@ -18,7 +18,7 @@ type Welcome struct {
 
 func NewWelcome(parent ...qtwidgets.QWidgetITF) *Welcome {
 	me := &Welcome{}
-	me.PageBase = NewPageBase(parent...)
+	me.PageBase = NewPageBase(0, parent...)
 	// me.setupmore()
 	time.AfterFunc(gopp.DurandMs(100, 200), qtrt.RunonUithreadfn(me.setupmore))
 	return me
@@ -30,6 +30,10 @@ func (me *Welcome) setupmore() {
 	lines, err := gopp.RunCmd(".", "nix-env", "--version")
 	gopp.ErrPrint(err)
 	log.Println(lines)
+	me.ccte.Append("Version: " + strings.Join(lines, "\n"))
+
+	lines, err = gopp.RunCmd(".", "nix", "store", "info", "--offline")
+	gopp.ErrPrint(err)
 	me.ccte.Append("Version: " + strings.Join(lines, "\n"))
 
 	{

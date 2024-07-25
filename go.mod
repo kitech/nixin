@@ -4,6 +4,7 @@ go 1.22.3
 
 require (
 	github.com/kitech/gopp v0.0.0
+    github.com/kitech/nixcmd v0.0.0
 	// github.com/kitech/minqt/qtinline v0.0.0
 	github.com/qtui/qtwidgets v0.0.0
 )
@@ -53,5 +54,6 @@ replace github.com/qtui/miscutil => ../qtui/miscutil
 replace github.com/kitech/gopp => ../goplusplus
 
 replace github.com/kitech/gopp/cgopp => ../goplusplus/cgopp
+replace github.com/kitech/nixcmd => ./nixcmd
 
 // replace github.com/kitech/minqt/qtinline => ../qtinline

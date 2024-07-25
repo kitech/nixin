@@ -15,7 +15,7 @@ type Installed struct {
 
 func NewInstalled(parent ...qtwidgets.QWidgetITF) *Installed {
 	me := &Installed{}
-	me.PageBase = NewPageBase(parent...)
+	me.PageBase = NewPageBase(0, parent...)
 
 	// me.setupmore()
 	time.AfterFunc(gopp.DurandMs(100, 200), qtrt.RunonUithreadfn(me.setupmore))

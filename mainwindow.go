@@ -46,24 +46,17 @@ func (me *MainWindow) setupui() {
 	me.stkcuritm = "welcome"
 
 	me.QMainWindow = qtwidgets.NewQMainWindow(nil, 0)
+	me.QMainWindow.Resize(800, 600)
 	me.split1 = qtwidgets.NewQSplitter(me.QMainWindow)
 	me.SetCentralWidget(me.split1)
 
 	me.lovbox1 = qtwidgets.NewQVBoxLayout(me.split1)
 
 	btnmenudats := []string{
-		"welcome",
-		"installed",
-		"history",
-		"profilelist",
-		"hehehhe555",
-		"hehehhe666",
-		"hehehhe777",
-		"hehehhe888",
-		"hehehhe999",
-		"hehehheaaa",
-		"hehehhebbb",
-		"hehehheccc",
+		"welcome", "installed", "history",
+		"profilelist", "storepaths", "hehehhe666",
+		"hehehhe777", "hehehhe888", "hehehhe999",
+		"hehehheaaa", "hehehhebbb", "hehehheccc",
 		"hehehheddd",
 	}
 
@@ -145,5 +138,11 @@ func (me *MainWindow) switchcontentpage(b bool, btn *qtwidgets.QPushButton) {
 		idx := me.rgtopstkw1.AddWidget(page)
 		me.rgtopstkw1.SetCurrentIndex(idx)
 		me.ccpages[objname] = page
+	case "storepaths":
+		page := NewStorepaths()
+		idx := me.rgtopstkw1.AddWidget(page)
+		me.rgtopstkw1.SetCurrentIndex(idx)
+		me.ccpages[objname] = page
+
 	}
 }
