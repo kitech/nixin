@@ -1,5 +1,5 @@
 import QtQml
-import QtQml.WorkerScript
+// import QtQml.WorkerScript
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
@@ -30,5 +30,10 @@ ApplicationWindow {
     // Material.accent: Material.Purple
     // Material.foreground : "red"
 
+
+
+    ColumnLayout {
+        objectName:"vertlo"
+    }
 
 }

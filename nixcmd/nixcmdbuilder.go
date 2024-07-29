@@ -14,6 +14,7 @@ const (
 	CmdNix = "nix"
 	CmdEnv = "nix-env"
 	CmdSh  = "nix-shell"
+	CmdCh  = "nix-channel"
 )
 
 func NewNix(cmd string) *Nix {
@@ -21,13 +22,15 @@ func NewNix(cmd string) *Nix {
 
 	switch cmd {
 	case "env":
-		me.Cmd = "nix-env"
+		me.Cmd = CmdEnv
 	case "sh":
-		me.Cmd = "nix-shell"
+		me.Cmd = CmdSh
+	case "ch":
+		me.Cmd = CmdCh
 	case "":
 		fallthrough
 	default:
-		me.Cmd = "nix"
+		me.Cmd = CmdNix
 	}
 
 	return me
