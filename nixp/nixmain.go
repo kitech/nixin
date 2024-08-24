@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	spjson "github.com/bitly/go-simplejson"
 	"github.com/kitech/gopp"
@@ -21,28 +22,61 @@ const nixstdir = "/nix/store"
 const nixusrenv = "/nix/store/ia81gjfsjrq2rzf52j4klcw7vxqbdvh3-env-manifest.nix"
 const websourl = "https://search.nixos.org/backend/latest-42-nixos-24.05/_search"
 
-var nixpkgs_cachedir = "%s/nixos/nixpkgs-6132b0f6e344ce2fe34fc051b72fb46e34f668e0"
+var nixpkgs_cachedir = os.Getenv("HOME") + "/nixos/nixpkgs-6132b0f6e344ce2fe34fc051b72fb46e34f668e0"
+
+//go:embed websereq.json
+var websereqtmpl string
 
 func init() {
-	nixpkgs_cachedir = fmt.Sprintf(nixpkgs_cachedir, os.Getenv("HOME"))
+	// nixpkgs_cachedir = fmt.Sprintf(nixpkgs_cachedir, os.Getenv("HOME"))
 	log.SetFlags(log.Flags() ^ log.Ldate ^ log.Ltime)
 }
 
 func main() {
 	flag.Parse()
 	log.Println("args:", flag.Args())
+	btime := time.Now()
+	defer func() { log.Println("Used:", time.Since(btime)) }()
 
 	cmd := flag.Arg(0)
 	switch cmd {
-	case "sow", "sew": //web
+	case "sow", "sew": // search web
 		// var data = gopp.MapSA{"from": 0, "size": 50}
 		// gopp.NewHttpClient().Post(websourl).BodyJson()
-	case "soc", "sec":
+
+		words := flag.Arg(1)
+		reqdata := websereqtmpl
+		reqdata = strings.ReplaceAll(reqdata, "\"aerc\"", fmt.Sprintf("\"%s\"", words))
+		reqdata = strings.ReplaceAll(reqdata, "\"multi_match_aerc\"", fmt.Sprintf("\"multi_match_%s\"", words))
+		reqdata = strings.ReplaceAll(reqdata, "\"*Aerc*\"", fmt.Sprintf("\"*%s*\"", gopp.Title(words)))
+		reqdata = strings.ReplaceAll(reqdata, "\"*aerc*\"", fmt.Sprintf("\"*%s*\"", (words)))
+
+		_, err := spjson.NewJson([]byte(reqdata))
+		gopp.ErrPrint(err, reqdata)
+		// log.Println(reqdata)
+
+		resp, err := gopp.NewHttpClient().Post(websourl).BodyRaw([]byte(reqdata)).Do()
+		gopp.ErrPrint(err, resp == nil)
+		if err != nil {
+			break
+		}
+		defer resp.Body.Close()
+
+		jso, err := spjson.NewFromReader(resp.Body)
+		gopp.ErrPrint(err, jso == nil)
+
+	case "soc", "sec": // search nixpkgs full cache
+		// search works.nix in metadb ~/nixos/nixpkgs-*/pkgs
+		// little slow, about 5s
+
 		keyword := flag.Arg(1)
 		cachedir := nixpkgs_cachedir + "/pkgs"
 
+		var secnter = 0
 		var dotnixs []string
 		filepath.WalkDir(cachedir, func(path string, d fs.DirEntry, err error) error {
+			secnter++
+			fmt.Printf("%4d: %v%v\r", secnter, d.Name(), strings.Repeat(" ", 26))
 			if d.IsDir() {
 				return nil
 			}
@@ -55,7 +89,7 @@ func main() {
 			return nil
 		})
 		// log.Println(len(dotnixs), dotnixs, len(dotnixs))
-		log.Println("rc", len(dotnixs))
+		log.Println("rc", len(dotnixs), secnter)
 
 		vec := gopp.Mapdo(dotnixs, func(idx int, vx any) []any {
 			v := vx.(string)
@@ -66,13 +100,14 @@ func main() {
 			log.Println(idx, bname, v2)
 
 			dftnix := v[:len(v)-len(bname)] + "default.nix"
+			dftnix = strings.Replace(dftnix, uhome, "~", 1)
 			log.Println(gopp.FileExist(dftnix), dftnix)
 
 			return nil
 		})
 		log.Println(gopp.Lenof(vec))
 
-	case "so":
+	case "so": // search /nix/store dir, already installed
 		items, err := os.ReadDir(nixstdir)
 		gopp.ErrPrint(err)
 		// log.Println(items)
@@ -104,11 +139,20 @@ func main() {
 		})
 
 	case "envshow":
-		scc := gopp.ReadFileMust(nixusrenv)
-		jso, err := spjson.NewJson([]byte(scc))
-		gopp.ErrPrint(err)
-		gopp.Mapdo(jso.MustArray(), func(vx any) []any {
-			log.Println(vx)
+		files, err := filepath.Glob("/nix/store/*-env-manifest.nix")
+		gopp.ErrPrint(err, files == nil)
+		gopp.Mapdo(files, func(idx int, vx any) []any {
+			val := vx.(string)
+			log.Println("Reading...", idx, val)
+			scc := gopp.ReadFileMust(val)
+			jso, err := spjson.NewJson([]byte(scc)) // todo, its not json indeed
+			gopp.ErrPrint(err, scc)
+
+			gopp.Mapdo(jso.MustArray(), func(vx any) []any {
+				log.Println(vx)
+				return nil
+			})
+
 			return nil
 		})
 
@@ -122,6 +166,9 @@ func main() {
 		bcc, err := io.ReadAll(resp.Body)
 		gopp.ErrPrint(err, hturl)
 		log.Println(string(bcc))
+
+	default:
+		log.Println("so, soc, sow, dlar, envshow")
 	}
 
 }
