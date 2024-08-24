@@ -43,6 +43,8 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 )
 
+require github.com/abadojack/whatlanggo v1.0.1 // indirect
+
 replace github.com/qtui/qtrt => ../qtui/qtrt
 
 replace github.com/qtui/qtclzsz => ../qtui/qtclzsz

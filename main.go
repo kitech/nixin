@@ -17,6 +17,7 @@ func main() {
 	flag.Parse()
 	typ := flag.Arg(0)
 	log.Println(typ)
+
 	if typ == "qml" {
 		mainqml()
 	} else {
