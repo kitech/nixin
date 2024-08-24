@@ -46,6 +46,7 @@ func main() {
 
 		words := flag.Arg(1)
 		reqdata := websereqtmpl
+		reqdata = strings.ReplaceAll(reqdata, "\"size\": 50,", "\"size\": 20,")
 		reqdata = strings.ReplaceAll(reqdata, "\"aerc\"", fmt.Sprintf("\"%s\"", words))
 		reqdata = strings.ReplaceAll(reqdata, "\"multi_match_aerc\"", fmt.Sprintf("\"multi_match_%s\"", words))
 		reqdata = strings.ReplaceAll(reqdata, "\"*Aerc*\"", fmt.Sprintf("\"*%s*\"", gopp.Title(words)))
@@ -55,15 +56,41 @@ func main() {
 		gopp.ErrPrint(err, reqdata)
 		// log.Println(reqdata)
 
-		resp, err := gopp.NewHttpClient().Post(websourl).BodyRaw([]byte(reqdata)).Do()
+		htcli := gopp.NewHttpClient().HeaderKV("referer", "https://search.nixos.org/packages").Post(websourl).BodyRaw([]byte(reqdata))
+		htcli.HeaderKV("Authorization", "Basic YVdWU0FMWHBadjpYOGdQSG56TDUyd0ZFZWt1eHNmUTljU2g=")
+		htcli.HeaderKV("content-type", gopp.HttpCTJson)
+		resp, err := htcli.Do()
 		gopp.ErrPrint(err, resp == nil)
 		if err != nil {
 			break
 		}
 		defer resp.Body.Close()
 
-		jso, err := spjson.NewFromReader(resp.Body)
+		bcc, err := io.ReadAll(resp.Body)
+		gopp.ErrPrint(err)
+		if resp.StatusCode >= 400 {
+			log.Println(resp.Status, websourl, string(bcc))
+		}
+
+		jso, err := spjson.NewJson(bcc)
 		gopp.ErrPrint(err, jso == nil)
+		// log.Println(jso)
+		hitsx := jso.GetPath("hits", "hits")
+		for i := 0; i < len(hitsx.MustArray()); i++ {
+			ox := hitsx.GetIndex(i).Get("_source")
+			// log.Println(i, ox)
+			// log.Println(i, ox.Get("package_attr_name"), ox.Get("package_pversion"), ox.Get("package_description"), ox.Get("package_homepage"))
+			// 没有更新时间还感觉缺少点啥
+			pkgname := ox.Get("package_attr_name").MustString()
+			pkgver := ox.Get("package_pversion").MustString()
+			pkgdesc := ox.Get("package_description").MustString()
+			pkgurl := ox.Get("package_homepage").Interface()
+
+			log.Println(i, pkgname, pkgver, pkgdesc)
+			// log.Println(i, pkgdesc)
+			log.Println(i, strings.Repeat(" ", 4), pkgurl)
+			log.Println()
+		}
 
 	case "soc", "sec": // search nixpkgs full cache
 		// search works.nix in metadb ~/nixos/nixpkgs-*/pkgs
@@ -134,7 +161,7 @@ func main() {
 
 		gopp.Mapdo(vec, func(vx any) []any {
 			v := vx.(fs.DirEntry)
-			log.Println(v)
+			log.Println(v.Type(), nixstdir+"/"+v.Name())
 			return nil
 		})
 
