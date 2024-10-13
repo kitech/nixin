@@ -1,6 +1,6 @@
 module main
 
-go 1.22.1
+go 1.22.3
 
 require (
 	github.com/kitech/gopp v0.0.0-20240824041214-55b8a232c6e7
@@ -8,8 +8,14 @@ require (
 )
 
 require (
+	github.com/bitly/go-simplejson v0.5.1
+	github.com/kitech/nixin/nixcmd v0.0.0
+)
+
+replace github.com/kitech/nixin/nixcmd => ../nixcmd
+
+require (
 	github.com/Workiva/go-datastructures v1.1.5 // indirect
-	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
 	github.com/dolthub/maphash v0.1.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect

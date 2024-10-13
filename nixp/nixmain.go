@@ -15,8 +15,13 @@ import (
 	"github.com/kitech/gopp"
 	_ "github.com/spf13/cobra"
 
+	"github.com/kitech/nixin/nixcmd"
+
 	_ "embed"
 )
+
+// nix-channel --update's download package, ~30m
+// https://mirrors.ustc.edu.cn/nix-channels/nixpkgs-unstable//nixexprs.tar.xz
 
 const nixstdir = "/nix/store"
 const nixusrenv = "/nix/store/ia81gjfsjrq2rzf52j4klcw7vxqbdvh3-env-manifest.nix"
@@ -83,11 +88,23 @@ func main() {
 			// 没有更新时间还感觉缺少点啥
 			pkgname := ox.Get("package_attr_name").MustString()
 			pkgver := ox.Get("package_pversion").MustString()
+			// pkgmts := ox.Get("package_maintainers") // map
 			pkgdesc := ox.Get("package_description").MustString()
 			pkgurl := ox.Get("package_homepage").Interface()
+			pkgpfes := ox.Get("package_platforms").MustArray()
+			// todo show available platforms
+			pkgoses := gopp.MapSI{}
+			gopp.Mapdo(pkgpfes, func(idx int, vx any) []any {
+				// log.Println(idx, vx)
+				flds := strings.Split(gopp.ToStr(vx), "-")
+				pkgoses[flds[1]] = 1
+				return nil
+			})
 
-			log.Println(i, pkgname, pkgver, pkgdesc)
+			log.Println(i, ">>>", pkgname, "v"+pkgver, gopp.MapKeys(pkgoses))
+			log.Println(i, strings.Repeat(" ", 4), pkgdesc)
 			// log.Println(i, pkgdesc)
+			log.Println(i, strings.Repeat(" ", 4), fmt.Sprintf("nix-env -iA nixpkgs.%v --dry-run", pkgname))
 			log.Println(i, strings.Repeat(" ", 4), pkgurl)
 			log.Println()
 		}
@@ -194,8 +211,47 @@ func main() {
 		gopp.ErrPrint(err, hturl)
 		log.Println(string(bcc))
 
+	case "gc":
+		// log.Println("Running...", "nix-store --gc")
+		exe := "/nix/var/nix/profiles/default/bin/nix-store"
+		exe = "nix-store"
+		gopp.RunCmdSout(nil, ".", exe, "--gc", "-v", "--max-jobs", "1")
+
+	case "gcp": // gc plus
+		// log.Println("Running...", "nix-store --gc")
+		nc := nixcmd.NewNix(nixcmd.CmdGc)
+		nc.Verbose().Delold()
+		gopp.RunCmdSout(nil, ".", nc.Lineslc()...)
+
+	case "chup", "chanup":
+		nc := nixcmd.NewNix(nixcmd.CmdCh)
+		nc.Verbose().Update()
+		gopp.RunCmdSout(nil, ".", nc.Lineslc()...)
+
+	case "inst", "install":
+		nc := nixcmd.NewNix(nixcmd.CmdEnv)
+		nc.Dryrun().Install().Attr().Arg("nixpkgs." + flag.Arg(1))
+		log.Println(nc.Lineslc())
+		gopp.RunCmdSout(nil, ".", nc.Lineslc()...)
+	case "qi,li": // list/query installed
+		gopp.RunCmdSout(nil, ".", "nix-env", "-q")
+	case "si": // search installed
+		kw := flag.Arg(1)
+		scc, err := gopp.RunCmdCout("nix-env", "-q")
+		gopp.ErrPrint(err)
+		// log.Println(scc)
+		lc := strings.Count(scc, "\n")
+		mc := 0
+		gopp.Mapdo(strings.Split(scc, "\n"), func(idx int, vx string) {
+			if gopp.StrHaveNocase(vx, kw) {
+				mc++
+				log.Println(idx, "of", lc, vx)
+			}
+		})
+		gopp.ZeroPrint(mc, kw, "Not found in total", lc)
+
 	default:
-		log.Println("so, soc, sow, dlar, envshow")
+		log.Println("so, soc, sow, dlar, envshow, gc, chup, si, qf?")
 	}
 
 }
