@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -93,15 +94,25 @@ func main() {
 			pkgurl := ox.Get("package_homepage").Interface()
 			pkgpfes := ox.Get("package_platforms").MustArray()
 			// todo show available platforms
-			pkgoses := gopp.MapSI{}
+			pkgosesm := gopp.MapSI{}
+			pkgoses := []string{}
 			gopp.Mapdo(pkgpfes, func(idx int, vx any) []any {
-				// log.Println(idx, vx)
+				// log.Println(idx, vx, runtime.GOOS)
 				flds := strings.Split(gopp.ToStr(vx), "-")
-				pkgoses[flds[1]] = 1
+				if _, ok := pkgosesm[flds[1]]; ok {
+					return nil
+				}
+				pkgosesm[flds[1]] = 1
+				if flds[1] == runtime.GOOS {
+					flds[1] = fmt.Sprintf("*%s*", flds[1])
+					pkgoses = append([]string{flds[1]}, pkgoses...)
+				} else {
+					pkgoses = append(pkgoses, flds[1])
+				}
 				return nil
 			})
 
-			log.Println(i, ">>>", pkgname, "v"+pkgver, gopp.MapKeys(pkgoses))
+			log.Println(i, ">>>", pkgname, "v"+pkgver, len(pkgoses), pkgoses) // gopp.MapKeys(pkgoses))
 			log.Println(i, strings.Repeat(" ", 4), pkgdesc)
 			// log.Println(i, pkgdesc)
 			log.Println(i, strings.Repeat(" ", 4), fmt.Sprintf("nix-env -iA nixpkgs.%v --dry-run", pkgname))
@@ -209,7 +220,34 @@ func main() {
 		gopp.ErrPrint(err, hturl)
 		bcc, err := io.ReadAll(resp.Body)
 		gopp.ErrPrint(err, hturl)
-		log.Println(string(bcc))
+		// log.Println(string(bcc))
+		log.Println(filepath.Base(hturl), gopp.Bytes2Humz(len(bcc)))
+
+		// todo use API ???
+		hturl = "https://github.com/NixOS/nixpkgs/tags"
+		scc, err := gopp.NewHttpClient().Get(hturl).DoReadStr()
+		gopp.ErrPrint(err, hturl)
+		var arurl string
+		gopp.Mapdo(strings.Split(scc, "\n"), func(idx int, line string) {
+			// <a class="Link--muted" href="/NixOS/nixpkgs/archive/refs/tags/24.05.zip" rel="nofollow">
+			if gopp.StrHaveNocase(line, "/archive/refs/tags") && strings.Contains(line, ".tar.gz") {
+				// log.Println(line)
+				if arurl == "" {
+					log.Println(strings.Split(line, "\"")[3])
+					for _, s := range strings.Split(line, "\"") {
+						if strings.HasPrefix(s, "/NixOS/nixpkgs") {
+							arurl = fmt.Sprintf("https://github.com%s", s)
+							break
+						}
+					}
+				}
+			}
+		})
+		log.Println("arurl", arurl)
+		nn, err := gopp.NewHttpClient().Redirect(true).Get(arurl).
+			DoSave(filepath.Base(arurl))
+		gopp.ErrPrint(err)
+		log.Println("arfile", gopp.Bytes2Humz(nn))
 
 	case "gc":
 		// log.Println("Running...", "nix-store --gc")
