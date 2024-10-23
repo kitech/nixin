@@ -271,7 +271,7 @@ func main() {
 		nc.Dryrun().Install().Attr().Arg("nixpkgs." + flag.Arg(1))
 		log.Println(nc.Lineslc())
 		gopp.RunCmdSout(nil, ".", nc.Lineslc()...)
-	case "qi,li": // list/query installed
+	case "qi", "li": // list/query installed
 		gopp.RunCmdSout(nil, ".", "nix-env", "-q")
 	case "si": // search installed
 		kw := flag.Arg(1)
@@ -288,8 +288,19 @@ func main() {
 		})
 		gopp.ZeroPrint(mc, kw, "Not found in total", lc)
 
+	case "lg": // nix-env --list-generations
+		gopp.RunCmdSout(nil, ".", "nix-env", "--list-generations")
+	case "dg": //
+		// grval := flag.Arg(1)
+		gopp.RunCmdSout(nil, ".", "nix-env", "--delete-generations", "85")
+		gopp.RunCmdSout(nil, ".", "nix-env", "--delete-generations", "30d")
+		gopp.RunCmdSout(nil, ".", "nix-env", "--delete-generations", "+8")
+		gopp.RunCmdSout(nil, ".", "nix-env", "--delete-generations", "+5")
+		log.Println("remove all old except current...")
+		gopp.PauseAk()
+		gopp.RunCmdSout(nil, ".", "nix-env", "--delete-generations", "old")
 	default:
-		log.Println("so, soc, sow, dlar, envshow, gc, chup, si, qf?")
+		log.Println("so, soc, sow, dlar, envshow, gc, chup, si, qf?, lg, dg")
 	}
 
 }
